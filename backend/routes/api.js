@@ -12,7 +12,7 @@ const upload = multer({ dest: "uploads/" }); // Specify the folder for uploads
 router.post("/auth/register", AuthController.register);
 router.post("/auth/login", AuthController.login);
 router.post(
-  "/auth/upload-csv",
+  "/upload-csv",
   authMiddleware,
   upload.single("file"),
   LandOwnerController.uploadCSV

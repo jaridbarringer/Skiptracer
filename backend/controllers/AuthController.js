@@ -41,7 +41,6 @@ class AuthController {
     } catch (error) {
       console.log("The error is", error);
       if (error instanceof errors.E_VALIDATION_ERROR) {
-        // console.log(error.messages);
         return res.status(400).json({ errors: error.messages });
       } else {
         return res.status(500).json({
@@ -99,7 +98,6 @@ class AuthController {
     } catch (error) {
       console.log("The error is", error);
       if (error instanceof errors.E_VALIDATION_ERROR) {
-        // console.log(error.messages);
         return res.status(400).json({ errors: error.messages });
       } else {
         return res.status(500).json({

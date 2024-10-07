@@ -13,17 +13,17 @@ class LandOwnerController {
       }
 
       const landOwnersData = [];
-
+      console.log("landOwnersData", landOwnersData);
       // Read and parse CSV
       fs.createReadStream(file.path)
         .pipe(csv())
         .on("data", (row) => {
           landOwnersData.push({
-            name: row.name,
-            address: row.address,
-            cityState: row.cityState,
-            email: row.email,
-            phone: row.phone,
+            name: row.name || null,
+            address: row.address || null,
+            cityState: row.cityState || null,
+            email: row.email || null,
+            phone: row.phone || null,
           });
         })
         .on("end", async () => {
@@ -35,7 +35,7 @@ class LandOwnerController {
             where: { id: userId },
             include: { LandOwners: true },
           });
-
+          console.log("findUser", findUser);
           if (!findUser) {
             return res.status(404).json({ message: "User not found" });
           }
@@ -46,14 +46,16 @@ class LandOwnerController {
           // Save the updated landowners array in the DB
           await Promise.all(
             landOwnersData.map((owner) => {
-              return prisma.landOwners.create({
+              return prisma.LandOwners.create({
                 data: {
                   name: owner.name,
                   address: owner.address,
                   cityState: owner.cityState,
                   email: owner.email,
                   phone: owner.phone,
-                  userId: userId, // Link landowner to user
+                  user: {
+                    connect: { id: userId }, // Assuming user with id 1 exists
+                  },
                 },
               });
             })
