@@ -18,6 +18,19 @@ model Users {
   name       String   @db.VarChar(191)
   email      String   @unique @db.VarChar(191)
   password   String
+  LandOwners       LandOwners[]?
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
+}
+
+
+model LandOwners {
+  id        Int      @id @default(autoincrement())
+  name      String
+  address   String
+  cityState String
+  email     String   @unique
+  phone     String
+  userId    Int
+  user      Users    @relation(fields: [userId], references: [id])
 }
