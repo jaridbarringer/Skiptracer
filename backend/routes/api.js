@@ -17,5 +17,10 @@ router.post(
   upload.single("file"),
   LandOwnerController.uploadCSV
 ); // New CSV upload route
+router.get(
+  "/landowners",
+  authMiddleware,
+  LandOwnerController.getLandOwnersByUserId
+);
 
 export default router;
