@@ -8,7 +8,6 @@ import {
   Divider,
   FormControl,
   FormControlLabel,
-  FormLabel,
   IconButton,
   InputAdornment,
   Link,
@@ -39,10 +38,6 @@ const Login = () => {
     control,
     formState: { errors },
     handleSubmit,
-    reset,
-    setValue,
-    watch,
-    getValues,
   } = useForm({
     mode: "onChange",
     defaultValues: {

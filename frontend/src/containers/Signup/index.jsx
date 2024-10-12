@@ -3,12 +3,8 @@ import { styles } from "./styles";
 import {
   Box,
   Button,
-  Checkbox,
   Container,
-  Divider,
   FormControl,
-  FormControlLabel,
-  FormLabel,
   IconButton,
   InputAdornment,
   Link,
