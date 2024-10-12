@@ -1,36 +1,8 @@
 import React from "react";
-import { Box, Stack } from "@mui/material";
-import { Header, SideMenu } from "../../containers";
+import { Layout } from "../../components";
 
 const Dashboard = () => {
-  return (
-    <div>
-      {" "}
-      <Box display="flex">
-        <SideMenu />
-        {/* Main content */}
-        <Box
-          sx={(theme) => ({
-            flexGrow: 1,
-            overflow: "auto",
-          })}
-        >
-          <Stack
-            spacing={2}
-            sx={{
-              alignItems: "center",
-              mx: 3,
-              pb: 10,
-              mt: { xs: 8, md: 0 },
-            }}
-          >
-            <Header />
-            {/* <MainGrid /> */}
-          </Stack>
-        </Box>
-      </Box>
-    </div>
-  );
+  return <Layout>Home</Layout>;
 };
 
 export default Dashboard;

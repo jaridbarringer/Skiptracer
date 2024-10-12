@@ -4,6 +4,7 @@ import CustomDatePicker from "./CustomDatePicker";
 import NavbarBreadcrumbs from "./NavbarBreadcrumbs";
 import MenuButton from "./MenuButton";
 import ColorModelDropdown from "./ColorModelDropdown";
+import Layout from "./Layout";
 
 export {
   CustomTextField,
@@ -12,4 +13,5 @@ export {
   NavbarBreadcrumbs,
   MenuButton,
   ColorModelDropdown,
+  Layout,
 };
