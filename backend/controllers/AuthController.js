@@ -78,7 +78,6 @@ class AuthController {
           id: findUser.id,
           name: findUser.name,
           email: findUser.email,
-          profile: findUser.profile,
         };
         const token = jwt.sign(payloadData, process.env.JWT_SECRET, {
           expiresIn: "365d",
@@ -86,13 +85,18 @@ class AuthController {
 
         return res.json({
           message: "Logged in",
-          access_token: `Bearer ${token}`,
+          user: {
+            id: payloadData.id,
+            name: payloadData.name,
+            email: payloadData.email,
+            access_token: `Bearer ${token}`,
+          },
         });
       }
 
       return res.status(400).json({
         errors: {
-          email: "No user found with this email.",
+          message: "No user found with this email.",
         },
       });
     } catch (error) {
