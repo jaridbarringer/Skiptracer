@@ -53,11 +53,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { mode, setMode } = useColorScheme();
-  if (!mode) {
-    return null;
-  }
-  console.log("mode", mode);
+
   const handlePasswordToggle = () => {
     setShowPassword(!showPassword);
   };
