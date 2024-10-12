@@ -36,6 +36,7 @@ const UploadCSV = () => {
       );
 
       if (response.status === 200) {
+        setSelectedFile(null);
         toast.success("File uploaded successfully!", {
           position: "top-right",
           autoClose: 3000,
