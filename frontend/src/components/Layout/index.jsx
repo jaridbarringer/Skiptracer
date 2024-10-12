@@ -1,8 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, Stack } from "@mui/material";
 import { Header, SideMenu } from "../../containers";
+import { useNavigate } from "react-router-dom";
 
 const Layout = ({ children }) => {
+  const isAuthenticated = !!localStorage.getItem("user");
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/signin");
+    }
+  }, [isAuthenticated, navigate]);
+
   return (
     <Box display="flex">
       <SideMenu />

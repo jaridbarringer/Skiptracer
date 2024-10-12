@@ -16,9 +16,11 @@ const apiClient = axios.create({
 });
 
 const getAuthToken = () => {
-  const token = getCookie("jwt");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user?.access_token;
+
   if (token) {
-    return { headers: { Authorization: `Token ${token}` } };
+    return { headers: { Authorization: token } };
   }
   return null;
 };
@@ -44,10 +46,15 @@ export async function makePostRequest(
 ) {
   try {
     const tokenHeaders = withToken ? getAuthToken() : {};
+
     const response = await apiClient.post(url, bodyFormData, {
       ...config,
-      ...tokenHeaders,
+      headers: {
+        ...tokenHeaders?.headers,
+        ...config.headers,
+      },
     });
+
     return response;
   } catch (error) {
     return error.response || Promise.reject(error);
