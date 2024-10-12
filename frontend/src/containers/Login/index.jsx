@@ -75,7 +75,6 @@ const Login = () => {
           position: "top-right",
           autoClose: 3000,
         });
-        dispatch(loginSuccess(response.data));
         setLoading(false);
       } else {
         toast.error(
@@ -106,8 +105,6 @@ const Login = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack>
               <FormControl>
-                <FormLabel htmlFor="email">Email</FormLabel>
-
                 <CustomTextField
                   variant="standard"
                   name="email"
@@ -216,7 +213,7 @@ const Login = () => {
                 Don't have an account?{" "}
                 <span>
                   <Link
-                    href="/material-ui/getting-started/templates/sign-in/"
+                    href="/signup"
                     variant="body2"
                     sx={{ alignSelf: "center" }}
                   >

@@ -6,7 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { CssBaseline } from "@mui/material";
-import { Login } from "./containers";
+import { Login, Signup } from "./containers";
 
 const App = () => {
   return (
@@ -32,6 +32,7 @@ const App = () => {
 
           {/* Route for the sign-in page */}
           <Route path="/signin" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
         </Routes>
       </Router>
     </div>
