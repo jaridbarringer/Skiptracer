@@ -14,23 +14,6 @@ const App = () => {
       <Router>
         <CssBaseline />
         <Routes>
-          {/* Default route that redirects to sign in page if not authenticated */}
-          {/* <Route
-      path="/"
-      element={
-        isAuthenticated ? <Dashboard /> : <Navigate to="/signin" />
-      }
-    /> */}
-
-          {/* Route for the dashboard */}
-          {/* <Route
-      path="/dashboard"
-      element={
-        isAuthenticated ? <Dashboard /> : <Navigate to="/signin" />
-      }
-    /> */}
-
-          {/* Route for the sign-in page */}
           <Route path="/signin" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/" element={<Dashboard />} />

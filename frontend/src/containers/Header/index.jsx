@@ -30,16 +30,11 @@ export default function Header() {
           placeholder="Search..."
           sx={{
             marginTop: "5px",
-            "& .MuiInputBase-root": {
-              color: "white",
-              fontSize: "18px",
-              padding: "6px 14px",
-            },
           }}
         />
 
         <CustomDatePicker />
-        <MenuButton showBadge aria-label="Open notifications">
+        <MenuButton showBadge>
           <NotificationsRoundedIcon />
         </MenuButton>
         <ColorModelDropdown />

@@ -21,7 +21,7 @@ class AuthController {
       if (findUser) {
         return res.status(400).json({
           errors: {
-            email: "Email already taken.please use another one.",
+            message: "Email already taken.please use another one.",
           },
         });
       }
@@ -68,7 +68,7 @@ class AuthController {
         if (!bcrypt.compareSync(payload.password, findUser.password)) {
           return res.status(400).json({
             errors: {
-              email: "Invalid Credentials.",
+              message: "Invalid Credentials.",
             },
           });
         }

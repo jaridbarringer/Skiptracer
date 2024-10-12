@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styles } from "./styles";
 import {
   Box,
@@ -48,6 +48,12 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const isAuthenticated = !!localStorage.getItem("user");
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated]);
 
   const handlePasswordToggle = () => {
     setShowPassword(!showPassword);
@@ -65,11 +71,11 @@ const Login = () => {
       const response = await makePostRequest(urls.signin, payload, {}, false);
       if (response.status === 200) {
         localStorage.setItem("user", JSON.stringify(response.data?.user));
-        navigate("/");
         toast.success("You have successfully logged in", {
           position: "top-right",
           autoClose: 3000,
         });
+        navigate("/");
         setLoading(false);
       } else {
         toast.error(

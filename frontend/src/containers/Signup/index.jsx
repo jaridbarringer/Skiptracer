@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { styles } from "./styles";
 import {
   Box,
@@ -31,7 +31,6 @@ const Signup = () => {
     formState: { errors },
     handleSubmit,
     watch,
-    reset,
   } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -48,6 +47,13 @@ const Signup = () => {
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const isAuthenticated = !!localStorage.getItem("user");
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated]);
 
   const handlePasswordToggle = () => {
     setShowPassword(!showPassword);
