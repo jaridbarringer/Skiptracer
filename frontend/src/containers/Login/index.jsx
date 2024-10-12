@@ -1,19 +1,20 @@
 import React, { useState } from "react";
-import { MuiCard, SignInContainer, styles } from "./styles";
+import { styles } from "./styles";
 import {
   Box,
   Button,
-  Card,
   Checkbox,
   Container,
   Divider,
   FormControl,
   FormControlLabel,
   FormLabel,
+  IconButton,
+  InputAdornment,
   Link,
   Paper,
   Stack,
-  TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import {
@@ -29,6 +30,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { makePostRequest } from "../../../utils/api";
 import { urls } from "../../../utils/urls";
 import { useNavigate } from "react-router-dom";
+import { useColorScheme } from "@mui/material/styles";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 const Login = () => {
   const {
@@ -49,7 +53,11 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  const { mode, setMode } = useColorScheme();
+  if (!mode) {
+    return null;
+  }
+  console.log("mode", mode);
   const handlePasswordToggle = () => {
     setShowPassword(!showPassword);
   };
@@ -64,13 +72,12 @@ const Login = () => {
     try {
       setLoading(true);
       const response = await makePostRequest(urls.signin, payload, {}, false);
-      console.log("response.data", response.data);
       if (response.status === 200) {
-        // localStorage.setItem("user", JSON.stringify(response.data));
+        localStorage.setItem("user", JSON.stringify(response.data?.user));
         navigate("/");
         toast.success("You have successfully logged in", {
           position: "top-right",
-          autoClose: 5000,
+          autoClose: 3000,
         });
         dispatch(loginSuccess(response.data));
         setLoading(false);
@@ -81,7 +88,7 @@ const Login = () => {
             : "Something went wrong",
           {
             position: "top-right",
-            autoClose: 5000,
+            autoClose: 3000,
           }
         );
         setLoading(false);
@@ -91,7 +98,7 @@ const Login = () => {
       setLoading(false);
     }
   };
-  console.log("errors", errors);
+
   return (
     <Box sx={styles.mainBox}>
       <Container style={{ maxWidth: "500px" }}>
@@ -145,6 +152,41 @@ const Login = () => {
                   control={control}
                   helperText={errors.password?.message}
                   isHookForm={true}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment>
+                        <IconButton
+                          size="small"
+                          onClick={handlePasswordToggle}
+                          cursor="pointer"
+                        >
+                          {showPassword ? (
+                            <Tooltip
+                              title={
+                                <React.Fragment>
+                                  <Typography>Hide password</Typography>
+                                </React.Fragment>
+                              }
+                              placement="top"
+                            >
+                              <VisibilityIcon />
+                            </Tooltip>
+                          ) : (
+                            <Tooltip
+                              title={
+                                <React.Fragment>
+                                  <Typography>Show password</Typography>
+                                </React.Fragment>
+                              }
+                              placement="top"
+                            >
+                              <VisibilityOffIcon />
+                            </Tooltip>
+                          )}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
                 <Stack direction="row" justifyContent="end" pt={1}>
                   <Link
