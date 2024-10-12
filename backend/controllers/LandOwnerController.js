@@ -80,7 +80,6 @@ class LandOwnerController {
   static async getLandOwnersByUserId(req, res) {
     try {
       const userId = req.user.id;
-
       // Fetch landowners for the specific user from the database
       const landOwners = await prisma.LandOwners.findMany({
         where: { userId: userId }, // Assuming 'userId' is the foreign key in LandOwners table
