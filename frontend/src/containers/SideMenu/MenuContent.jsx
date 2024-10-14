@@ -13,9 +13,10 @@ import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import InfoRoundedIcon from "@mui/icons-material/InfoRounded";
 import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
 import AssignmentReturnedIcon from "@mui/icons-material/AssignmentReturned";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import GroupIcon from "@mui/icons-material/Group";
+import { useEffect } from "react";
 
 const mainListItems = [
   { text: "Home", icon: <HomeRoundedIcon />, path: "/" },
@@ -33,7 +34,16 @@ const secondaryListItems = [
 ];
 
 export default function MenuContent() {
+  const location = useLocation();
   const [selectedItem, setSelectedItem] = useState(0);
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const index = mainListItems.findIndex((item) => item.path === currentPath);
+    if (index !== -1) {
+      setSelectedItem(index);
+    }
+  }, [location.pathname]);
 
   return (
     <Stack sx={{ flexGrow: 1, p: 1, justifyContent: "space-between" }}>
