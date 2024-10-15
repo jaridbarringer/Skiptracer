@@ -25,21 +25,21 @@ export const extractPhone = (detailPageData) => {
 export const extractEmail = (detailPageData) => {
   try {
     const $ = cheerio.load(detailPageData);
-    // Try to find the email in the nested divs first
-    let email = $(".col > div").first().text().trim();
 
-    // If not found, try the single div
-    if (!email) {
-      email = $("div")
-        .filter(function () {
-          return $(this).text().trim().includes("@");
-        })
-        .first()
-        .text()
-        .trim();
-    }
+    const emailAddresses = [];
+    $("body")
+      .find("*")
+      .each(function (i, element) {
+        const text = $(element).text().trim();
+        const emails = text.match(
+          /\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b/g
+        );
+        if (emails) {
+          emailAddresses.push(...emails);
+        }
+      });
 
-    return email || "No email found";
+    return emailAddresses.length > 0 ? emailAddresses : "No email found";
   } catch (error) {
     console.error("Error extracting email:", error);
     return "Error extracting email";

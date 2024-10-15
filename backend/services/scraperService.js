@@ -1,5 +1,3 @@
-// src/services/scraperService.js
-
 import axios from "axios";
 
 // Make HTTP request to the scraper API

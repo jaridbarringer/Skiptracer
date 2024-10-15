@@ -141,10 +141,8 @@ class LandOwnerController {
 
             // Extract phone and email
             const phone = extractPhone(detailPageData);
-            const email = extractEmail(detailPageData);
-            console.log("phone", phone);
-            console.log("email", email);
-
+            const emails = extractEmail(detailPageData);
+            const email = Array.isArray(emails) ? emails[0] : emails;
             owner.phone = phone || owner.phone;
             owner.email = email || owner.email;
           }
