@@ -1,8 +1,12 @@
 import prisma from "../DB/db.config.js";
 import fs from "fs";
 import csv from "csv-parser";
-import axios from "axios";
-import * as cheerio from "cheerio";
+import {
+  extractDetailPageUrl,
+  extractEmail,
+  extractPhone,
+} from "../helpers/scraperUtils.js";
+import { makeScraperRequest } from "../services/scraperService.js";
 class LandOwnerController {
   // static async uploadCSV(req, res) {
   //   try {
@@ -115,93 +119,25 @@ class LandOwnerController {
 
       // Scraper function to fetch phone and email
 
-      const makeRequest = async (url) => {
-        console.log("url", url);
-        try {
-          const response = await axios.get(process.env.SCRAPER_API_URL, {
-            params: {
-              api_key: process.env.SCRAPER_API_KEY,
-              url: url,
-              ultra_premium: true,
-            },
-          });
-
-          // console.log("Scraping response:", response.data);
-          return response.data;
-        } catch (error) {
-          console.error("Error during scraping:", error.response);
-          throw error;
-        }
-      };
-
-      const extractDetailPageUrl = (searchPageData) => {
-        try {
-          const $ = cheerio.load(searchPageData);
-          const detailLink = $("a.btn.btn-success.btn-lg.detail-link").attr(
-            "href"
-          );
-          return detailLink
-            ? `https://www.truepeoplesearch.com${detailLink}`
-            : "";
-        } catch (error) {
-          console.error("Error extracting detail page URL:", error);
-          return "";
-        }
-      };
-
-      const extractPhone = (detailPageData) => {
-        try {
-          const $ = cheerio.load(detailPageData);
-          const phone = $('span[itemprop="telephone"]').first().text().trim();
-          return phone || "No phone number found";
-        } catch (error) {
-          console.error("Error extracting phone:", error);
-          return "Error extracting phone number";
-        }
-      };
-
-      const extractEmail = (detailPageData) => {
-        try {
-          const $ = cheerio.load(detailPageData);
-          // Try to find the email in the nested divs first
-          let email = $(".col > div").first().text().trim();
-
-          // If not found, try the single div
-          if (!email) {
-            email = $("div")
-              .filter(function () {
-                return $(this).text().trim().includes("@");
-              })
-              .first()
-              .text()
-              .trim();
-          }
-
-          return email || "No email found";
-        } catch (error) {
-          console.error("Error extracting email:", error);
-          return "Error extracting email";
-        }
-      };
       const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       // Save landowners
       await Promise.all(
         landOwnersData.map(async (owner, index) => {
-          await delay(7000);
+          await delay(index * 5000);
           const searchUrl = `${
             process.env.TRUE_PEOPLE_SEARCH_URL
           }/results?name=${encodeURIComponent(
             owner.name
           )}&citystatezip=${encodeURIComponent(owner.cityState)}`;
-          const searchPageData = await makeRequest(searchUrl);
-          console.log("Search Page Data:", searchPageData);
+          const searchPageData = await makeScraperRequest(searchUrl);
+          // console.log("Search Page Data:", searchPageData);
           const detailPageUrl = extractDetailPageUrl(searchPageData);
-          console.log("detailPageUrl", detailPageUrl);
+          // console.log("detailPageUrl", detailPageUrl);
           // If email or phone is missing, fetch from scraper
           if ((!owner.email || !owner.phone) && detailPageUrl) {
-            await delay(10000);
-            const detailPageData = await makeRequest(detailPageUrl);
-            console.log("Detail Page Data:", detailPageData); // Log the raw HTML content
+            await delay(index * 10000);
+            const detailPageData = await makeScraperRequest(detailPageUrl);
+            // console.log("Detail Page Data:", detailPageData);
 
             // Extract phone and email
             const phone = extractPhone(detailPageData);
