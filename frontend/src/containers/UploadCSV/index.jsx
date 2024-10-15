@@ -21,7 +21,7 @@ const UploadCSV = () => {
       });
       return;
     }
-
+    setLoading(true);
     const formData = new FormData();
     formData.append("file", selectedFile); // Append the file to formData
     const config = {
@@ -64,8 +64,8 @@ const UploadCSV = () => {
       <h2>Upload CSV File</h2>
       <form onSubmit={handleSubmit}>
         <input type="file" accept=".csv" onChange={handleFileChange} />
-        <button type="submit" disabled={loading || !selectedFile}>
-          Upload CSV
+        <button type="submit" disabled={loading}>
+          {loading ? "Please wait.." : "Upload CSV"}
         </button>
       </form>
     </Layout>

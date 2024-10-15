@@ -26,16 +26,20 @@ const columns = [
     field: "email",
     headerName: "Email",
     width: 200,
-    valueGetter: (params) => params?.row?.email || "-",
+    valueGetter: (params) => {
+      return params ? params : "-";
+    },
   },
   {
     field: "phone",
     headerName: "Phone ",
     type: "number",
     headerAlign: "left",
-    width: 110,
-    valueGetter: (params) =>
-      params?.row?.phone ? params?.row?.phone.toString() : "-",
+    align: "left",
+    width: 150,
+    valueGetter: (params) => {
+      return params ? params : "-";
+    },
   },
 ];
 
@@ -64,7 +68,7 @@ const LandOwners = () => {
   useEffect(() => {
     fetchLandOwners();
   }, []);
-
+  console.log("landOwners", landOwners);
   return (
     <Layout>
       <Box sx={{ height: 600, width: "100%" }}>

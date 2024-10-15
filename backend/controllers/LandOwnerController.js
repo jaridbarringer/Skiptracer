@@ -122,12 +122,11 @@ class LandOwnerController {
             params: {
               api_key: process.env.SCRAPER_API_KEY,
               url: url,
-              render: true,
-              premium: true,
+              ultra_premium: true,
             },
           });
 
-          console.log("Scraping response:", response.data);
+          // console.log("Scraping response:", response.data);
           return response.data;
         } catch (error) {
           console.error("Error during scraping:", error.response);
@@ -188,39 +187,29 @@ class LandOwnerController {
       // Save landowners
       await Promise.all(
         landOwnersData.map(async (owner, index) => {
-          // await delay(index * 5000);
-
-          // const searchUrl = `${
-          //   process.env.TRUE_PEOPLE_SEARCH_URL
-          // }/results?name=${encodeURIComponent(
-          //   owner.name
-          // )}&citystatezip=${encodeURIComponent(owner.cityState)}`;
+          await delay(7000);
           const searchUrl = `${
             process.env.TRUE_PEOPLE_SEARCH_URL
-          }/search?name=${encodeURIComponent(
+          }/results?name=${encodeURIComponent(
             owner.name
-          )}&location=${encodeURIComponent(owner.cityState)}`;
-
-          console.log("Search URL:", searchUrl); // Log the search URL for debugging
+          )}&citystatezip=${encodeURIComponent(owner.cityState)}`;
           const searchPageData = await makeRequest(searchUrl);
           console.log("Search Page Data:", searchPageData);
           const detailPageUrl = extractDetailPageUrl(searchPageData);
-
+          console.log("detailPageUrl", detailPageUrl);
           // If email or phone is missing, fetch from scraper
-          if (!owner.email || (!owner.phone && detailPageUrl)) {
+          if ((!owner.email || !owner.phone) && detailPageUrl) {
+            await delay(10000);
             const detailPageData = await makeRequest(detailPageUrl);
             console.log("Detail Page Data:", detailPageData); // Log the raw HTML content
 
             // Extract phone and email
             const phone = extractPhone(detailPageData);
             const email = extractEmail(detailPageData);
+            console.log("phone", phone);
+            console.log("email", email);
 
-            // const scrapedData = await fetchFromScraper(
-            //   owner.name,
-            //   owner.cityState
-            // );
-            // console.log("scrapedData", scrapedData);
-            owner.phone = phone || owner.phone; // Use scraped data if available
+            owner.phone = phone || owner.phone;
             owner.email = email || owner.email;
           }
 
