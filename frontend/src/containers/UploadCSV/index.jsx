@@ -42,13 +42,17 @@ const UploadCSV = () => {
           autoClose: 3000,
         });
         setLoading(false);
-      } else {
-        toast.error("Error uploading file. Please try again.", {
-          position: "top-right",
-          autoClose: 3000,
-        });
+      } else if (response.status === 400) {
+        toast.error(
+          response?.data?.message || "Error uploading file. Please try again.",
+          {
+            position: "top-right",
+            autoClose: 3000,
+          }
+        );
         setLoading(false);
       }
+      setLoading(false);
     } catch (error) {
       console.error("Error uploading file:", error);
       toast.error("Error uploading file", {
