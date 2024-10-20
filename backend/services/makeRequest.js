@@ -45,7 +45,6 @@ export async function makeGetRequest() {
 }
 
 export async function makeGetRequestForSingleData(id) {
-  console.log("id", id);
   let url = `${apiEndpoint}/queue/${id}`;
 
   try {

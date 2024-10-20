@@ -88,11 +88,24 @@ class LandOwnerController {
       );
 
       for (const result of matchingResults) {
-        const detailedResponse = await makeGetRequestForSingleData(result.id);
-        const detailedData = detailedResponse.data;
         const existingResult = await prisma.csvsResults.findFirst({
           where: { userId: parseInt(userId), id: result.id },
         });
+
+        // Check if existing result is found and if the results field is already populated
+        let detailedData;
+        if (
+          !existingResult ||
+          !existingResult.results ||
+          existingResult.results.length === 0
+        ) {
+          const detailedResponse = await makeGetRequestForSingleData(result.id);
+          detailedData = detailedResponse.data;
+        } else {
+          // Use existing results if available
+          detailedData = existingResult.results;
+        }
+
         const resultDataToSave = {
           id: result.id || null,
           download_url: result.download_url || null,
@@ -126,6 +139,7 @@ class LandOwnerController {
           if (!existingResult.results.length) {
             updates.results = detailedData;
           }
+
           // Only update if there are changes
           if (Object.keys(updates).length > 0) {
             await prisma.csvsResults.update({
@@ -141,7 +155,7 @@ class LandOwnerController {
         where: { userId: parseInt(userId) },
       });
       const resultsToSend = savedResults.map(
-        ({ download_url, ...rest }) => rest
+        ({ download_url, credits_deducted, ...rest }) => rest
       );
       return res.json({
         message: "CSV results processed successfully",
