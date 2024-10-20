@@ -99,7 +99,7 @@ class LandOwnerController {
           rows_uploaded: result.rows_uploaded || null,
           credits_deducted: result.credits_deducted || null,
           pending: result.pending || false,
-          results: JSON.stringify(detailedData),
+          results: detailedData,
           userId: parseInt(userId),
         };
 
@@ -123,10 +123,9 @@ class LandOwnerController {
           if (existingResult.pending !== result.pending) {
             updates.pending = result.pending;
           }
-          if (!existingResult.results && detailedData.length > 0) {
-            updates.results = JSON.stringify(detailedData);
-          }
 
+          console.log("updates", updates);
+          updates.results = detailedData;
           // Only update if there are changes
           if (Object.keys(updates).length > 0) {
             await prisma.csvsResults.update({
@@ -141,6 +140,7 @@ class LandOwnerController {
       const savedResults = await prisma.csvsResults.findMany({
         where: { userId: parseInt(userId) },
       });
+      // console.log("savedResults", savedResults);
       const resultsToSend = savedResults.map(
         ({ download_url, ...rest }) => rest
       );
