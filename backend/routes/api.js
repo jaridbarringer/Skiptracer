@@ -7,11 +7,6 @@ import LandOwnerController from "../controllers/LandOwnerController.js";
 const router = Router();
 
 const upload = multer({ dest: "uploads/" });
-// const upload = multer({
-//   storage: multer.memoryStorage(),
-//   limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
-//   dest: "uploads/",
-// });
 
 router.post("/auth/register", AuthController.register);
 router.post("/auth/login", AuthController.login);
@@ -21,6 +16,7 @@ router.post(
   upload.single("file"),
   LandOwnerController.uploadCSV
 );
+// router.get("/csvsresults", authMiddleware, LandOwnerController.getCsvsResults);
 router.get(
   "/landowners",
   authMiddleware,

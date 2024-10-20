@@ -14,15 +14,16 @@ datasource db {
 }
 
 model Users {
-  id         Int      @id @default(autoincrement())
-  name       String   @db.VarChar(191)
-  email      String   @unique @db.VarChar(191)
-  password   String
-  LandOwners LandOwners[]
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
+  id           Int             @id @default(autoincrement())
+  name         String          @db.VarChar(191)
+  email        String          @unique @db.VarChar(191)
+  password     String
+  LandOwners   LandOwners[]
+  UploadedCsvs UploadedCsvs[]   // Add this line for the relation with UploadedCsvs
+  CsvsResults  CsvsResults[]    // Add this line for the relation with CsvsResults
+  created_at   DateTime         @default(now())
+  updated_at   DateTime         @default(now())
 }
-
 
 model LandOwners {
   id        Int      @id @default(autoincrement())
@@ -33,4 +34,27 @@ model LandOwners {
   phone     String?
   userId    Int
   user      Users    @relation(fields: [userId], references: [id])
+}
+
+model UploadedCsvs {
+  id         Int      @id @default(autoincrement())
+  queue_id   Int
+  status     String
+  created_at DateTime @default(now()) // Added default for created_at
+  userId     Int
+  message    String
+  user       Users     @relation(fields: [userId], references: [id])
+
+  @@map("uploaded_csvs")
+}
+
+model CsvsResults {
+  id               Int      @id @default(autoincrement())
+  created_at       DateTime @default(now())
+  pending          Boolean  @default(false)
+  download_url     String? 
+  rows_uploaded    Int?     
+  credits_deducted Int?     
+  userId           Int
+  user             Users    @relation(fields: [userId], references: [id])
 }

@@ -7,7 +7,7 @@ class LandOwnerController {
   static async uploadCSV(req, res) {
     try {
       const file = req.file;
-
+      const userId = req.user.id;
       if (!file) {
         return res.status(400).json({
           status: 400,
@@ -37,12 +37,26 @@ class LandOwnerController {
       });
 
       const response = await makePostRequest(formData);
-      console.log("Third party response", response);
+      if (response.status === 200) {
+        const { queue_id, status, created_at, message } = response.data;
+        await prisma.uploadedCsvs.create({
+          data: {
+            queue_id,
+            status,
+            created_at: new Date(created_at),
+            message,
+            userId: userId,
+          },
+        });
 
-      // Optionally, remove the uploaded file from the server
-      fs.unlinkSync(file.path);
+        // Optionally, remove the uploaded file from the server
+        fs.unlinkSync(file.path);
 
-      return res.json({ message: "CSV processed successfully" });
+        return res.json({
+          message: "CSV processed successfully",
+          data: response.data,
+        });
+      }
     } catch (error) {
       console.error("Error uploading CSV:", error);
       return res.status(500).json({
@@ -51,6 +65,21 @@ class LandOwnerController {
       });
     }
   }
+
+  // static async getCsvsResults(req, res) {
+  //   try {
+  //     const userId = req.user.id;
+
+  //     makeGetRequest
+
+  //   } catch (error) {
+  //     console.log("Error fetching landowners:", error);
+  //     return res.status(500).json({
+  //       status: 500,
+  //       message: "Something went wrong. Please try again.",
+  //     });
+  //   }
+  // }
 
   static async getLandOwnersByUserId(req, res) {
     try {
