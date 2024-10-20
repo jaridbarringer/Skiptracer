@@ -71,11 +71,13 @@ class LandOwnerController {
       const userId = req.user.id;
       const response = await makeGetRequest();
       const apiResults = response.data;
+
       // Fetch all queue_ids from UploadedCsvs for the given userId
       const uploadedCsvs = await prisma.uploadedCsvs.findMany({
         where: { userId: parseInt(userId) },
         select: { queue_id: true },
       });
+
       // Extract queue_ids from UploadedCsvs
       const queueIds = uploadedCsvs.map((csv) => csv.queue_id);
 
@@ -83,15 +85,16 @@ class LandOwnerController {
       const matchingResults = apiResults.filter((result) =>
         queueIds.includes(result.id)
       );
-      // Loop through matching results and save in CsvsResults if not already there
-      let newResults = [];
+
       for (const result of matchingResults) {
+        // Check if result already exists in CsvsResults
         const existingResult = await prisma.csvsResults.findFirst({
           where: { userId: parseInt(userId), id: result.id },
         });
+
         if (!existingResult) {
-          // Save new result in CsvsResults
-          const newResult = await prisma.csvsResults.create({
+          // If not found, create a new entry in CsvsResults
+          await prisma.csvsResults.create({
             data: {
               id: result.id || null,
               download_url: result.download_url || null,
@@ -101,16 +104,37 @@ class LandOwnerController {
               userId: parseInt(userId),
             },
           });
+        } else {
+          // If found, check if any of the fields are missing or need updating
+          const updates = {};
 
-          newResults.push(newResult);
+          if (!existingResult.download_url && result.download_url) {
+            updates.download_url = result.download_url;
+          }
+          if (!existingResult.rows_uploaded && result.rows_uploaded) {
+            updates.rows_uploaded = result.rows_uploaded;
+          }
+          if (!existingResult.credits_deducted && result.credits_deducted) {
+            updates.credits_deducted = result.credits_deducted;
+          }
+
+          if (existingResult.pending !== result.pending) {
+            updates.pending = result.pending;
+          }
+
+          // Only update if there are changes
+          if (Object.keys(updates).length > 0) {
+            await prisma.csvsResults.update({
+              where: { id: existingResult.id },
+              data: updates,
+            });
+          }
         }
       }
 
-      // Return the newly added results and any that already existed
       return res.json({
         message: "CSV results processed successfully",
-        newResults,
-        matchingResults, // All results that matched, including already existing ones
+        data: matchingResults,
       });
     } catch (error) {
       console.error("Error fetching CSV results:", error);

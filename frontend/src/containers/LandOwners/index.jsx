@@ -8,37 +8,38 @@ import { urls } from "../../../utils/urls";
 const columns = [
   { field: "id", headerName: "ID", width: 90 },
   {
-    field: "name",
-    headerName: "Name",
+    field: "rows_uploaded",
+    headerName: "Rows Uploaded",
     width: 150,
   },
   {
-    field: "cityState",
-    headerName: "City State",
+    field: "created_at",
+    headerName: "Created At",
     width: 150,
   },
   {
-    field: "address",
-    headerName: "Address",
+    field: "actions",
+    headerName: "Actions",
     width: 250,
-  },
-  {
-    field: "email",
-    headerName: "Email",
-    width: 200,
-    valueGetter: (params) => {
-      return params ? params : "-";
-    },
-  },
-  {
-    field: "phone",
-    headerName: "Phone ",
-    type: "number",
-    headerAlign: "left",
-    align: "left",
-    width: 150,
-    valueGetter: (params) => {
-      return params ? params : "-";
+    renderCell: (params) => {
+      const handleButton1Click = () => {
+        const { id } = params.row;
+        console.log("Button 1 clicked", { id });
+      };
+
+      const handleButton2Click = () => {
+        const { download_url } = params.row;
+        console.log("Button 2 clicked", { download_url });
+      };
+
+      return (
+        <div>
+          <button onClick={handleButton1Click}>Preview</button>
+          <button onClick={handleButton2Click} style={{ marginLeft: 10 }}>
+            Download
+          </button>
+        </div>
+      );
     },
   },
 ];
@@ -54,7 +55,7 @@ const LandOwners = () => {
       const response = await makeGetRequest(urls.getLandowners, {}, true);
 
       if (response.status === 200) {
-        setLandOwners(response.data);
+        setLandOwners(response?.data?.data);
         setLoading(false);
       } else {
         setLoading(false);
