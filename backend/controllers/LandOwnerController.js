@@ -6,6 +6,7 @@ import {
   makeGetRequestForSingleData,
   makePostRequest,
 } from "../services/makeRequest.js";
+import { format } from "fast-csv";
 
 class LandOwnerController {
   static async uploadCSV(req, res) {
@@ -173,8 +174,6 @@ class LandOwnerController {
     try {
       const userId = req.user.id;
       const { id } = req.params;
-      console.log("userId", userId);
-      console.log("id", id);
 
       // Find the entry in csvsResults where id and userId match
       const landOwnerResult = await prisma.csvsResults.findFirst({
@@ -191,7 +190,7 @@ class LandOwnerController {
           message: "Landowners with the provided ID not found for this user.",
         });
       }
-      console.log("landOwnerResult", landOwnerResult);
+
       return res.json({
         status: 200,
         message: "Landowner data retrieved successfully.",
@@ -202,6 +201,57 @@ class LandOwnerController {
       return res.status(500).json({
         status: 500,
         message: "Error fetching landowners:",
+      });
+    }
+  }
+
+  static async downloadCsvById(req, res) {
+    try {
+      const { id } = req.params;
+      const userId = req.user.id;
+
+      // Fetch the data from csvsResults based on userId and id
+      const data = await prisma.csvsResults.findMany({
+        where: {
+          userId: parseInt(userId),
+          id: parseInt(id),
+        },
+      });
+
+      const results = data[0]?.results;
+      if (results.length === 0) {
+        return res.status(404).json({ message: "No results found." });
+      }
+
+      // Set the response headers for file download
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="results_${id}.csv"`
+      );
+
+      // Use fast-csv to convert the data to CSV format
+      const csvStream = format({ headers: true });
+      const readableStream = csvStream.pipe(res);
+
+      // Push each result into the stream
+      results.forEach((result) => {
+        csvStream.write(result);
+      });
+
+      // End the stream
+      csvStream.end();
+
+      // Handle any errors during the streaming
+      readableStream.on("error", (err) => {
+        console.error("Error streaming CSV:", err);
+        res.status(500).json({ message: "Error generating CSV." });
+      });
+    } catch (error) {
+      console.error("Error downloading CSV:", error);
+      return res.status(500).json({
+        status: 500,
+        message: "Something went wrong while generating the CSV.",
       });
     }
   }

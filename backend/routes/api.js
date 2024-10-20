@@ -22,5 +22,10 @@ router.get(
   authMiddleware,
   LandOwnerController.getLandOwnersByid
 );
+router.get(
+  "/download-csv/:id",
+  authMiddleware,
+  LandOwnerController.downloadCsvById
+);
 
 export default router;

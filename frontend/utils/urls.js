@@ -4,4 +4,5 @@ export const urls = {
   uploadcsv: "/upload-csv",
   getLandowners: "/landowners",
   getLandownersById: (id) => `landowners/${id}`,
+  downloadCsvById: (id) => `download-csv/${id}`,
 };
