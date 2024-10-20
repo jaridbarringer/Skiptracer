@@ -3,4 +3,5 @@ export const urls = {
   signup: "/auth/register",
   uploadcsv: "/upload-csv",
   getLandowners: "/landowners",
+  getLandownersById: (id) => `landowners/${id}`,
 };

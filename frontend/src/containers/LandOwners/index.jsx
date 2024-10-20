@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import { makeGetRequest } from "../../../utils/api";
 import { urls } from "../../../utils/urls";
+import { useNavigate } from "react-router-dom";
 
 const columns = [
   { field: "id", headerName: "ID", width: 90 },
@@ -22,14 +23,14 @@ const columns = [
     headerName: "Actions",
     width: 250,
     renderCell: (params) => {
+      const navigate = useNavigate();
       const handleButton1Click = () => {
         const { id } = params.row;
-        console.log("Button 1 clicked", { id });
+        navigate(`/landowners/${id}`);
       };
 
       const handleButton2Click = () => {
         const { download_url } = params.row;
-        console.log("Button 2 clicked", { download_url });
       };
 
       return (

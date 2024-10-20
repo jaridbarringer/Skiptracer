@@ -17,10 +17,10 @@ router.post(
   LandOwnerController.uploadCSV
 );
 router.get("/landowners", authMiddleware, LandOwnerController.getCsvsResults);
-// router.get(
-//   "/landowners",
-//   authMiddleware,
-//   LandOwnerController.getLandOwnersByUserId
-// );
+router.get(
+  "/landowners/:id",
+  authMiddleware,
+  LandOwnerController.getLandOwnersByid
+);
 
 export default router;

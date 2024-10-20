@@ -169,28 +169,39 @@ class LandOwnerController {
       });
     }
   }
-
-  static async getLandOwnersByUserId(req, res) {
+  static async getLandOwnersByid(req, res) {
     try {
       const userId = req.user.id;
-      // Fetch landowners for the specific user from the database
-      const landOwners = await prisma.LandOwners.findMany({
-        where: { userId: userId }, // Assuming 'userId' is the foreign key in LandOwners table
+      const { id } = req.params;
+      console.log("userId", userId);
+      console.log("id", id);
+
+      // Find the entry in csvsResults where id and userId match
+      const landOwnerResult = await prisma.csvsResults.findFirst({
+        where: {
+          id: parseInt(id),
+          userId: parseInt(userId),
+        },
       });
 
-      if (!landOwners || landOwners.length === 0) {
-        return res
-          .status(404)
-          .json({ message: "No landowners found for this user" });
+      // Check if the result is found
+      if (!landOwnerResult) {
+        return res.status(404).json({
+          status: 404,
+          message: "Landowners with the provided ID not found for this user.",
+        });
       }
-
-      // Return the list of landowners
-      return res.json(landOwners);
+      console.log("landOwnerResult", landOwnerResult);
+      return res.json({
+        status: 200,
+        message: "Landowner data retrieved successfully.",
+        data: landOwnerResult,
+      });
     } catch (error) {
       console.log("Error fetching landowners:", error);
       return res.status(500).json({
         status: 500,
-        message: "Something went wrong. Please try again.",
+        message: "Error fetching landowners:",
       });
     }
   }

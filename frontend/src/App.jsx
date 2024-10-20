@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { CssBaseline } from "@mui/material";
 import { Dashboard, LandOwners, Login, Signup, UploadCSV } from "./containers";
+import LandOwnerDetails from "./containers/LandOwners/LandOwnerDetails";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="/" element={<Dashboard />} />
           <Route path="/uploadcsv" element={<UploadCSV />} />
           <Route path="/landowners" element={<LandOwners />} />
+          <Route path="/landowners/:id" element={<LandOwnerDetails />} />
         </Routes>
       </Router>
     </div>
