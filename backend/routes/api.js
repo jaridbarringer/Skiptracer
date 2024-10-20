@@ -16,11 +16,11 @@ router.post(
   upload.single("file"),
   LandOwnerController.uploadCSV
 );
-router.get("/csvsresults", authMiddleware, LandOwnerController.getCsvsResults);
-router.get(
-  "/landowners",
-  authMiddleware,
-  LandOwnerController.getLandOwnersByUserId
-);
+router.get("/landowners", authMiddleware, LandOwnerController.getCsvsResults);
+// router.get(
+//   "/landowners",
+//   authMiddleware,
+//   LandOwnerController.getLandOwnersByUserId
+// );
 
 export default router;
