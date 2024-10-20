@@ -4,6 +4,7 @@ import csv from "csv-parser";
 import { makePostRequest1 } from "../utils/api.js";
 import FormData from "form-data";
 import { makePostRequest } from "../services/makeRequest.js";
+import { Readable } from "stream";
 
 class LandOwnerController {
   // static async uploadCSV(req, res) {
@@ -272,74 +273,49 @@ class LandOwnerController {
       const file = req.file;
 
       if (!file) {
-        return res.status(400).json({ message: "No file uploaded" });
+        return res.status(400).json({
+          status: 400,
+          message: "No file uploaded",
+        });
       }
 
       if (file.mimetype !== "text/csv") {
-        return res
-          .status(400)
-          .json({ message: "Uploaded file is not in CSV format" });
+        return res.status(400).json({
+          status: 400,
+          message: "Uploaded file is not in CSV format",
+        });
       }
 
-      const requiredColumns = [
-        "address",
-        "city",
-        "state",
-        "first name",
-        "last name",
-      ];
-      const missingColumns = [];
       const landOwnersData = [];
 
-      // Parse CSV and validate columns
       const parseCSV = () => {
         return new Promise((resolve, reject) => {
-          fs.createReadStream(file.path)
-            .pipe(csv())
-            .on("headers", (headers) => {
-              // Normalize headers to lowercase for case-insensitive comparison
-              const normalizedHeaders = headers.map((header) =>
-                header.trim().toLowerCase()
-              );
+          // Convert file buffer to a readable stream
+          const readableFile = new Readable();
+          readableFile.push(file.buffer);
+          readableFile.push(null);
 
-              // Check if required columns exist in the normalized headers
-              requiredColumns.forEach((column) => {
-                if (!normalizedHeaders.includes(column)) {
-                  missingColumns.push(column);
-                }
+          readableFile
+            .pipe(csv())
+            .on("data", (row) => {
+              console.log("row", row);
+              landOwnersData.push({
+                address: row.Address || null,
+                city: row["Home City"] || null,
+                state: row.State || null,
+                firstName: row["First Name"] || null,
+                lastName: row["Last Name"] || null,
               });
             })
-            .on("data", (row) => {
-              if (missingColumns.length === 0) {
-                const normalizedRow = {};
-                Object.keys(row).forEach((key) => {
-                  normalizedRow[key.toLowerCase()] = row[key];
-                });
-                landOwnersData.push({
-                  address: normalizedRow.address || null,
-                  city: normalizedRow.city || null,
-                  state: normalizedRow.state || null,
-                  firstName: normalizedRow["first name"] || null,
-                  lastName: normalizedRow["last name"] || null,
-                });
-              }
-            })
-            .on("end", () => resolve())
+            .on("end", () => resolve(landOwnersData))
             .on("error", (err) => reject(err));
         });
       };
+
+      // Wait for CSV parsing
       await parseCSV();
 
-      if (missingColumns.length > 0) {
-        return res.status(400).json({
-          status: 400,
-          message: `The following columns are missing in the CSV: ${missingColumns.join(
-            ", "
-          )}`,
-        });
-      }
-
-      // console.log("landOwnersData", landOwnersData);
+      console.log("landOwnersData", landOwnersData);
       for (const owner of landOwnersData) {
         const formData = new FormData();
         formData.append("address_column", owner.address);
@@ -352,8 +328,10 @@ class LandOwnerController {
         formData.append("mail_state_column", owner.state);
         // formData.append("csv_file", file);
         // console.log("inside body", body);
-        const fileStream = fs.createReadStream(file.path);
-        formData.append("csv_file", fileStream);
+        // console.log("file.buffer", file.buffer);
+        // const fileStream = fs.createReadStream(file.path);
+        // formData.append("csv_file", fileStream);
+        formData.append("csv_file", file.buffer);
         const response = await makePostRequest(formData);
         // const config = {
         //   headers: { "Content-Type": "multipart/form-data" },
