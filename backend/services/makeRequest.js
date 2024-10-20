@@ -43,3 +43,23 @@ export async function makeGetRequest() {
     throw error;
   }
 }
+
+export async function makeGetRequestForSingleData(id) {
+  let url = `${apiEndpoint}/queue/${id}`;
+
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${bearerToken}`,
+      },
+    });
+
+    return response;
+  } catch (error) {
+    console.error(
+      "Error:",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
+  }
+}

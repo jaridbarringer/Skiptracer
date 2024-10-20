@@ -57,4 +57,6 @@ model CsvsResults {
   credits_deducted Int?     
   userId           Int
   user             Users    @relation(fields: [userId], references: [id])
+  results          Json?
 }
+
