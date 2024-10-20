@@ -88,7 +88,6 @@ class LandOwnerController {
       );
 
       for (const result of matchingResults) {
-        // Make additional API call to fetch detailed results
         const detailedResponse = await makeGetRequestForSingleData(result.id);
         const detailedData = detailedResponse.data;
         const existingResult = await prisma.csvsResults.findFirst({
@@ -125,7 +124,7 @@ class LandOwnerController {
             updates.pending = result.pending;
           }
           if (!existingResult.results && detailedData.length > 0) {
-            updates.results = detailedData;
+            updates.results = JSON.stringify(detailedData);
           }
 
           // Only update if there are changes
@@ -138,9 +137,16 @@ class LandOwnerController {
         }
       }
 
+      // After processing, fetch the saved results from the database
+      const savedResults = await prisma.csvsResults.findMany({
+        where: { userId: parseInt(userId) },
+      });
+      const resultsToSend = savedResults.map(
+        ({ download_url, ...rest }) => rest
+      );
       return res.json({
         message: "CSV results processed successfully",
-        data: matchingResults,
+        data: resultsToSend,
       });
     } catch (error) {
       console.error("Error fetching CSV results:", error);
