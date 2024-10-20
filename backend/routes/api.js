@@ -16,7 +16,7 @@ router.post(
   upload.single("file"),
   LandOwnerController.uploadCSV
 );
-// router.get("/csvsresults", authMiddleware, LandOwnerController.getCsvsResults);
+router.get("/csvsresults", authMiddleware, LandOwnerController.getCsvsResults);
 router.get(
   "/landowners",
   authMiddleware,

@@ -1,7 +1,7 @@
 import prisma from "../DB/db.config.js";
 import fs from "fs";
 import FormData from "form-data";
-import { makePostRequest } from "../services/makeRequest.js";
+import { makeGetRequest, makePostRequest } from "../services/makeRequest.js";
 
 class LandOwnerController {
   static async uploadCSV(req, res) {
@@ -66,20 +66,60 @@ class LandOwnerController {
     }
   }
 
-  // static async getCsvsResults(req, res) {
-  //   try {
-  //     const userId = req.user.id;
+  static async getCsvsResults(req, res) {
+    try {
+      const userId = req.user.id;
+      const response = await makeGetRequest();
+      const apiResults = response.data;
+      // Fetch all queue_ids from UploadedCsvs for the given userId
+      const uploadedCsvs = await prisma.uploadedCsvs.findMany({
+        where: { userId: parseInt(userId) },
+        select: { queue_id: true },
+      });
+      // Extract queue_ids from UploadedCsvs
+      const queueIds = uploadedCsvs.map((csv) => csv.queue_id);
 
-  //     makeGetRequest
+      // Filter API results where queue_id matches with UploadedCsvs
+      const matchingResults = apiResults.filter((result) =>
+        queueIds.includes(result.id)
+      );
+      // Loop through matching results and save in CsvsResults if not already there
+      let newResults = [];
+      for (const result of matchingResults) {
+        const existingResult = await prisma.csvsResults.findFirst({
+          where: { userId: parseInt(userId), id: result.id },
+        });
+        if (!existingResult) {
+          // Save new result in CsvsResults
+          const newResult = await prisma.csvsResults.create({
+            data: {
+              id: result.id || null,
+              download_url: result.download_url || null,
+              rows_uploaded: result.rows_uploaded || null,
+              credits_deducted: result.credits_deducted || null,
+              pending: result.pending || false,
+              userId: parseInt(userId),
+            },
+          });
 
-  //   } catch (error) {
-  //     console.log("Error fetching landowners:", error);
-  //     return res.status(500).json({
-  //       status: 500,
-  //       message: "Something went wrong. Please try again.",
-  //     });
-  //   }
-  // }
+          newResults.push(newResult);
+        }
+      }
+
+      // Return the newly added results and any that already existed
+      return res.json({
+        message: "CSV results processed successfully",
+        newResults,
+        matchingResults, // All results that matched, including already existing ones
+      });
+    } catch (error) {
+      console.error("Error fetching CSV results:", error);
+      return res.status(500).json({
+        status: 500,
+        message: "Something went wrong while processing CSV results.",
+      });
+    }
+  }
 
   static async getLandOwnersByUserId(req, res) {
     try {
