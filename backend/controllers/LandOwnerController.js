@@ -4,7 +4,6 @@ import csv from "csv-parser";
 import { makePostRequest1 } from "../utils/api.js";
 import FormData from "form-data";
 import { makePostRequest } from "../services/makeRequest.js";
-import { Readable } from "stream";
 
 class LandOwnerController {
   // static async uploadCSV(req, res) {
@@ -288,17 +287,12 @@ class LandOwnerController {
 
       const landOwnersData = [];
 
+      // Parse CSV and validate columns
       const parseCSV = () => {
         return new Promise((resolve, reject) => {
-          // Convert file buffer to a readable stream
-          const readableFile = new Readable();
-          readableFile.push(file.buffer);
-          readableFile.push(null);
-
-          readableFile
+          fs.createReadStream(file.path)
             .pipe(csv())
             .on("data", (row) => {
-              console.log("row", row);
               landOwnersData.push({
                 address: row.Address || null,
                 city: row["Home City"] || null,
@@ -307,15 +301,13 @@ class LandOwnerController {
                 lastName: row["Last Name"] || null,
               });
             })
-            .on("end", () => resolve(landOwnersData))
+            .on("end", () => resolve())
             .on("error", (err) => reject(err));
         });
       };
-
-      // Wait for CSV parsing
       await parseCSV();
 
-      console.log("landOwnersData", landOwnersData);
+      // console.log("landOwnersData", landOwnersData);
       for (const owner of landOwnersData) {
         const formData = new FormData();
         formData.append("address_column", owner.address);
@@ -327,11 +319,15 @@ class LandOwnerController {
         formData.append("mail_city_column", owner.city);
         formData.append("mail_state_column", owner.state);
         // formData.append("csv_file", file);
-        // console.log("inside body", body);
-        // console.log("file.buffer", file.buffer);
-        // const fileStream = fs.createReadStream(file.path);
+        console.log("file", file);
+        // console.log("filepath", file.path);
+        const fileStream = fs.createReadStream(file.path);
         // formData.append("csv_file", fileStream);
-        formData.append("csv_file", file.buffer);
+        formData.append("csv_file", fs.createReadStream(file.path), {
+          filename: file.originalname,
+          contentType: file.mimetype,
+        });
+
         const response = await makePostRequest(formData);
         // const config = {
         //   headers: { "Content-Type": "multipart/form-data" },

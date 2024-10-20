@@ -4,16 +4,13 @@ const apiEndpoint = `${process.env.TRACERFY_BASE_URL}/trace/`;
 const bearerToken = process.env.TRACERFY_API_KEY;
 
 export async function makePostRequest(formData) {
-  console.log("bearerToken", bearerToken);
-  console.log("apiEndpoint", apiEndpoint);
+  // console.log("bearerToken", bearerToken);
+  // console.log("apiEndpoint", apiEndpoint);
 
   const config = {
     method: "post",
     maxBodyLength: Infinity,
     url: apiEndpoint,
-    // headers: {
-    //   ...formData.getHeaders(),
-    // },
     headers: {
       Authorization: `Bearer ${bearerToken}`,
       ...formData.getHeaders(),
@@ -21,17 +18,12 @@ export async function makePostRequest(formData) {
     data: formData,
   };
   try {
-    // const response = await axios.post(apiEndpoint, formData, {
-    //   headers: {
-    //     ...formData.getHeaders(),
-    //     Authorization: `Bearer ${bearerToken}`,
-    //   },
-    // });
-    const response = await axios.post(config);
+    const response = await axios(config);
     console.log("Response:", response.status, response.data);
     return response;
   } catch (error) {
-    console.log("Error:", error.response ? error.response.data : error.message);
+    // console.log("Error:", error.response ? error.response.data : error.message);
+    console.log("error", error);
     throw error;
   }
 }
