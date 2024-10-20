@@ -123,9 +123,13 @@ class LandOwnerController {
           if (existingResult.pending !== result.pending) {
             updates.pending = result.pending;
           }
+          if (!existingResult.results.length) {
+            console.log("makeGetRequest");
+            updates.results = detailedData;
+          }
 
-          console.log("updates", updates);
-          updates.results = detailedData;
+          // console.log("existingResult.results", existingResult.results);
+          // updates.results = detailedData;
           // Only update if there are changes
           if (Object.keys(updates).length > 0) {
             await prisma.csvsResults.update({
@@ -140,7 +144,6 @@ class LandOwnerController {
       const savedResults = await prisma.csvsResults.findMany({
         where: { userId: parseInt(userId) },
       });
-      // console.log("savedResults", savedResults);
       const resultsToSend = savedResults.map(
         ({ download_url, ...rest }) => rest
       );
