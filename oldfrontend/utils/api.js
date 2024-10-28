@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const getCookie = () => {};
+
 export function getUrl() {
-  return process.env.NEXT_PUBLIC_BACKEND_URL;
+  return import.meta.env.VITE_BACKEND_URL;
 }
 
 // Create a reusable axios instance with default settings
