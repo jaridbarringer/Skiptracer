@@ -123,7 +123,7 @@ const Navbar = () => {
                 key={page}
                 onClick={handleCloseNavMenu}
                 sx={{
-                  my: 2,
+                  m: 2,
                   color: "black",
                   display: "block",
                   fontFamily: "Rubik-Regular",

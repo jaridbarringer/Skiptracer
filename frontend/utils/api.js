@@ -4,7 +4,6 @@ export function getUrl() {
   return process.env.NEXT_PUBLIC_BACKEND_URL;
 }
 
-// Create a reusable axios instance with default settings
 const apiClient = axios.create({
   baseURL: getUrl(),
   headers: {

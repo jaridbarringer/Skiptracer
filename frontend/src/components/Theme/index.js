@@ -70,12 +70,6 @@ const theme = createTheme({
       fontSize: "18px",
       lineHeight: "28.6px",
     },
-    subtitle3: {
-      fontFamily: "Rubik-Regular",
-      fontWeight: 400,
-      fontSize: "18px",
-      lineHeight: "34.74px",
-    },
   },
 });
 
