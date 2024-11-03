@@ -41,24 +41,24 @@ const Navbar = () => {
     <AppBar position="static" color="inherit" elevation={0}>
       <Container maxWidth="lg">
         <Toolbar disableGutters>
-          <Link href="/">
-            <Typography
-              variant="h6"
-              noWrap
-              component="a"
-              href="#app-bar-with-responsive-menu"
-              sx={{
-                mr: 2,
-                display: { xs: "none", md: "flex" },
-                letterSpacing: ".3rem",
-                color: "black",
-                textDecoration: "none",
-                fontFamily: "Rubik-Regular",
-              }}
-            >
-              LOGO
-            </Typography>
-          </Link>
+          {/* <Link href="/"> */}
+          <Typography
+            variant="h6"
+            noWrap
+            component="a"
+            href="#app-bar-with-responsive-menu"
+            sx={{
+              mr: 2,
+              display: { xs: "none", md: "flex" },
+              letterSpacing: ".3rem",
+              color: "black",
+              textDecoration: "none",
+              fontFamily: "Rubik-Regular",
+            }}
+          >
+            LOGO
+          </Typography>
+          {/* </Link> */}
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton

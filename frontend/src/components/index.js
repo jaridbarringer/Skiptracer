@@ -1,3 +1,4 @@
 import Navbar from "./Navbar";
+import theme from "./Theme";
 
-export { Navbar };
+export { Navbar, theme };
